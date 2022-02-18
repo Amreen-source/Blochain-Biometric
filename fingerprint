@@ -1,0 +1,21 @@
+Code for reading the fingerprint from scanning device.
+//Placing the finger on scanning device to capture the image//
+1.	def read_fingerprint():
+2.	"""read the fingerprint image placed on scanning device!"""
+3.	print("Waiting for image...")
+4.	while finger.get_image()
+5.	pass
+6.	print("Templating...")
+7.	if finger.image_2_tz(1) != adafruit_fingerprint.OK:
+8.	return True
+9.	def get_fingerprint_detail():
+10.	print("preparing print...", end="", flush=True) 11.
+12.	print("Storing defination..." % location, end="", flush=True)
+13.	i = finger.store_model(location)
+14.	print("Stored")
+15.	else:
+16.	print("Bad storage location")
+17.	else:
+18.	print("Other error")
+19.	return False
+20.	return True

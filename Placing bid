@@ -1,0 +1,70 @@
+1.	Sample code of Placing Bid on Job
+2.	def placebid(request):
+3.	try:
+4.	if request.method == "POST":
+a.	jobid = request.POST['jobid']
+b.	Description = request.POST['bidDescription']
+c.	jBudget = request.POST['jBudget']
+d.	jsubject = request.POST['jsubject']
+e.	sellerID = request.session["lid"]
+f.	biddate = datetime.datetime.now()
+g.	bidstatus = "Pending"
+h.	import by MySQL
+i.	conns = pymysql.connect("localhost", "root", "", "freelancerdb")
+j.	maxid = "SELECT MAX(id) FROM bidtb "
+k.	curs = conns.cursor()
+l.	curs.execute(maxid)
+m.	ids = curs.fetchone()[0]
+n.	bidid = ids + 1
+o.	curs.close()
+p.	conns.close()
+q.	sellercons = pymysql.connect("localhost", "root", "", "freelancerdb")
+r.	sellercurss = sellercons.cursor()
+s.	qry = """SELECT * FROM `logintb` where loginId = %(value)s"""
+t.	params = {'value': sellerID}
+u.	sellercurss.execute(qry, params)
+v.	sellerresult = sellercurss.fetchone()
+w.	sellernamme = sellerresult[4]
+x.	sellerPhone = sellerresult[5]
+y.	sellercurss.close()
+z.	sellercons.close()
+aa. jobcons = pymysql.connect("localhost", "root", "", "freelancerdb") bb. jobcurss = job-cons.cursor()
+cc. qry = """SELECT * FROM `postjobstb` where jobid = %(value)s""" dd. params = {'value': jobid}
+ee. jobcurss.execute(qry, params) ff. jobresult = jobcurss.fetchone() gg. jobduration = jobresult[4]
+hh. jobpostedbyid = jobresult[6]
+ii. jobcurss.close() jj. jobcons.close()
+
+kk. jobpostedcons = pymysql.connect("localhost", "root", "", "freelancerdb") ll. jobpost-edcurss = jobpostedcons.cursor()
+mm.	qry = """SELECT * FROM `logintb` where loginId = %(value)s""" nn. params = {'value': jobpostedbyid}
+oo. jobpostedcurss.execute(qry, params)
+pp. jobpostedresult = jobpostedcurss.fetchone() qq. jobpostedbynamme = jobpost-edresult[4]
+rr. jobpostedbyPhone = jobpostedresult[5] ss. jobpostedcurss.close()
+tt. jobpostedcons.close()
+uu. cons = pymysql.connect("localhost", "root", "", "freelancerdb")
+vv. curss = cons.cursor()
+ww.	qry = """SELECT * FROM `bidtb` where sellerID = %(value)s and jobID = %(val-ue1)s"""
+xx.	params = {'value': sellerID, 'value1': jobid} yy. curss.execute(qry, params)
+zz. result = curss.fetchone() aaa.	if result is None:
+bbb.	message = "Bid has been placed. Thank you!"
+ccc.	conn = pymysql.connect("localhost", "root", "", "freelancerdb")
+ddd.	query = """INSERT INTO `bidtb` (sellerID, jobID, bidID, bidDate, bidStatus, bid-descripton, sname, sphone, jobbudget, jobduration, jobostedbyphone, jobpost-edbynamme, jobsubject, jobpostedbyID) VALUES (%(value1)s,  %(value2)s,  %(val-ue3)s,  %(value4)s,  %(value5)s, %(value6)s,
+%(value7)s, %(value8)s, %(value9)s, %(value10)s, %(value11)s, %(value12)s,
+%(value13)s, %(value14)s )""" eee.	cur = conn.cursor()
+fff. params = {'value1': sellerID, 'value2': jobid, 'value3': bidid, 'value4': biddate,
+i.	'value5': bidstatus, 'value6': Description, 'value7': sellernamme, 'value8': seller-Phone,
+ii.	'value9': jBudget, 'value10': jobduration, 'value11': jobpostedbyPhone,
+iii.	'value12': jobpostedbynamme, 'value13': jsubject, 'value14': jobpostedbyid}
+ggg.	cur.execute(query, params) hhh.	conn.commit()
+iii. contexts = {'msg': message}
+jjj. return render(request, "sBuyerReq.html", {'id': contexts}) kkk.	cur.close()
+lll. conn.close() mmm.	else:
+nnn.	message = "You have already placed bid at this job!!" ooo.	contexts = {'msg': message}
+ppp.	return render(request, "sBuyerReq.html", {'id': contexts})
+5.	else:
+a.	message = "Operation Failed!"
+b.	contexts = {'msg': message}
+c.	return render(request, "sBuyerReq.html", {'id': contexts})
+6.	except:
+7.	message = "Unknown error."
+8.	contexts = {'msg': message}
+9.	return render(request, "sBuyerReq.html", {'id': contexts})

@@ -1,0 +1,43 @@
+1.	Sample Code of posting a job in the system by buyer
+2.	def postJob(request):
+3.	try:
+4.	if request.method == "POST":
+a.	subject = request.POST['subject']
+b.	UserType = request.POST['UserType']
+c.	Budgets = request.POST['Budget']
+d.	Durations = request.POST['Duration']
+e.	Description = request.POST['Description']
+f.	dattimm = request.POST['cdattimm']
+g.	Budget = Budgets + "-$"
+h.	Duration = Durations + "-Days"
+i.	postby = request.session["lid"]
+j.	agreementstatus = "Pending"
+k.	import pymysql
+l.	conns = pymysql.connect("localhost", "root", "", "freelancerdb")
+m.	maxid = "SELECT MAX(id) FROM postjobsTb "
+n.	curs = conns.cursor()
+o.	curs.execute(maxid)
+p.	ids = curs.fetchone()[0]
+q.	jobid = ids + 1
+r.	message = "Your Job has been Posted. Thank you!"
+s.	conn = pymysql.connect("localhost", "root", "", "freelancerdb")
+t.	query = """INSERT INTO `postjobsTb` (jobsubject, jobtype, budget, Duration, De-scription, postby, jobid, dattimm, agreementstatus) VALUES (%(value1)s,
+%(value2)s,  %(value3)s,  %(value4)s, %(value5)s, %(value6)s,	%(value7)s,
+%(value8)s, %(value9)s)"""
+u.	cur = conn.cursor()
+v.	params = {'value1': subject, 'value2': UserType, 'value3': Budget, 'value4': Duration,
+i.	'value5': Description, 'value6': postby, 'value7': jobid, 'value8': dattimm,
+ii.	'value9': agreementstatus}
+w.	cur.execute(query, params)
+x.	conn.commit()
+y.	contexts = {'msg': message}
+z.	return render(request, "contactform.html", {'id': contexts}) aa. cur.close()
+bb. conn.close()
+5.	else:
+a.	message = "Operation Failed!"
+b.	contexts = {'msg': message}
+c.	return render(request, "contactform.html", {'id': contexts})
+6.	except:
+7.	message = "Unknown error!!"
+8.	contexts = {'msg': message}
+9.	return render(request, "contactform.html", {'id': contexts})

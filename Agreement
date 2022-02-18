@@ -1,0 +1,274 @@
+10.	Sample Code of Agreement
+//Start agreement Process from buyer side//
+11.	def agreementformbuyyer(request, bidid):
+12.	try:
+13.	buyyerid = request.session["lid"]
+14.	import by MySQL
+15.	jobstatus = "Final"
+16.	bidconn = pymysql.connect("localhost", "root", "", "freelancerdb")
+17.	bidcur = bidconn.cursor()
+18.	qry = """SELECT * FROM `bidtb` where bidID = %(value)s """
+19.	params = {'value': bidid}
+20.	bidcur.execute(qry, params)
+21.	bidresult = bidcur.fetchone()
+22.	sellerid = bidresult[1]
+23.	jobid = bidresult[9]
+24.	bidcur.close()
+25.	bidconn.close()
+26.	jobconn = pymysql.connect("localhost", "root", "", "freelancerdb")
+27.	jobcur = jobconn.cursor()
+28.	qry = """SELECT * FROM `postjobstb` where jobid = %(value)s """
+29.	params = {'value': jobid}
+30.	jobcur.execute(qry, params)
+31.	jobresult = jobcur.fetchone()
+32.	jobstatus1 = jobresult[9]
+33.	jobsubject = jobresult[1]
+34.	budget = jobresult[3]
+35.	duration = jobresult[4]
+36.	description = jobresult[5]
+37.	jobcur.close()
+38.	jobconn.close()
+39.	if jobstatus1 == jobstatus:
+a.	message = Agreement has been already signed! Thanks"
+b.	jobcontexts = {'msg': message}
+c.	return render(request, "sellerrRequest.html", {'id': jobcontexts})
+40.	else:
+a.	sellerconn = pymysql.connect("localhost", "root", "", "freelancerdb")
+b.	sellercur = sellerconn.cursor()
+c.	qry = """SELECT * FROM `logintb` where loginId = %(value)s """
+d.	params = {'value': sellerid}
+e.	sellercur.execute(qry, params)
+f.	sellerresult = sellercur.fetchone()
+g.	sellername = sellerresult[4]
+h.	sellerphone = sellerresult[5]
+i.	selleremail = sellerresult[6]
+j.	sellercur.close()
+k.	sellerconn.close()
+l.	buyyerconn = pymysql.connect("localhost", "root", "", "freelancerdb")
+m.	buyyercur = buyyerconn.cursor()
+n.	qry = """SELECT * FROM `logintb` where loginId = %(value)s """
+o.	params = {'value': buyyerid}
+p.	buyyercur.execute(qry, params)
+q.	buyyerresult = buyyercur.fetchone()
+r.	Bname = buyyerresult[4]
+s.	Bphone = buyyerresult[5]
+t.	Bemail = buyyerresult[6]
+u.	buyyerconn.close()
+v.	buyyercur.close()
+w.	contexts = {
+x.	'agreementdate': datetime.datetime.now(),
+y.	'jobid': jobid,
+z.	'jobsubject': jobsubject, aa. 'jobbudget':  budget, bb. 'timelimit': duration,
+cc. 'description': description, dd. 'buyerid': buyyerid,
+ee. 'buyername': Bname, ff. 'buyerphone': Bphone, gg. 'buyeremail': Bemail, hh. 'sellerid': sellerid,
+ii. 'sellername': sellername, jj. 'sellerphone': sellerphone, kk. 'selleremail': selleremail ll. }
+mm.	return render(request, "agreementform.html", {'id': contexts})
+41.	except:
+42.	return render(request, 'sellerrRequest.html')
+43.	def selleragreementdata(request):
+44.	try:
+45.	if request.method == "POST":
+a.	jobid = request.POST['id']
+b.	sub = request.POST['sub']
+c.	bgt = request.POST['bgt']
+d.	tl = request.POST['tl']
+e.	des = request.POST['des']
+f.	BID = request.POST['BID']
+g.	bn = request.POST['bn']
+h.	bp = request.POST['bp']
+i.	be = request.POST['be']
+j.	sid = request.POST['sid']
+k.	buyyersignstatus = 'Signed'
+l.	SELLERstatus = ''
+m.	import pymysql
+n.	MAXconns = pymysql.connect("localhost", "root", "", "freelancerdb")
+o.	maxid = "SELECT MAX(id) FROM selleragreementtb "
+p.	MAXcurs = MAXconns.cursor()
+q.	MAXcurs.execute(maxid)
+r.	ids = MAXcurs.fetchone()[0]
+s.	AGREEMENTid = ids + 1
+t.	MAXcurs.close()
+u.	MAXconns.close()
+v.	message = "Agreement has been signed by " + " " + bn
+w.	conn = pymysql.connect("localhost", "root", "", "freelancerdb")
+x.	query = """INSERT INTO `selleragreementtb` (jobid, jobsubject, jobbudget, job-timelimit, jobdescription, buyyerID, buyyerName, buyyerPhone, buyyerEmail, sellerID, buyyerSignStatus, agreementid) VALUES (%(value1)s,
+%(value2)s, %(value3)s, %(value4)s, %(value5)s, %(value6)s, %(value7)s,
+%(value8)s, %(value9)s, %(value10)s, %(value11)s, %(value12)s)"""
+y.	cur = conn.cursor()
+z.	params = {'value1': jobid, 'value2': sub, 'value3': bgt, 'value4': tl, 'value5': des,
+i.	'value6': BID, 'value7': bn, 'value8': bp, 'value9': be, 'value10': sid,
+ii.	'value11': buyyersignstatus, 'value12': AGREEMENTid} aa. cur.execute(query, params)
+bb. conn.commit() cc. cur.close()
+dd. conn.close()
+ee. hashjobid = pbkdf2_sha256.encrypt(jobid, rounds=200, salt_size=16) ff.  hashsub = pbkdf2_sha256.encrypt(sub, rounds=200, salt_size=16) gg. hashbgt = pbkdf2_sha256.encrypt(bgt, rounds=200, salt_size=16)
+hh. hashtl = pbkdf2_sha256.encrypt(tl, rounds=200, salt_size=16)
+ii.	hashdes = pbkdf2_sha256.encrypt(des, rounds=200, salt_size=16) jj. hashBID = pbkdf2_sha256.encrypt(BID, rounds=200, salt_size=16) kk. hashbn = pbkdf2_sha256.encrypt(bn, rounds=200, salt_size=16)
+ll. hashbp = pbkdf2_sha256.encrypt(bp, rounds=200, salt_size=16)
+mm.	hashbe = pbkdf2_sha256.encrypt(be, rounds=200, salt_size=16) nn. hashsid = pbkdf2_sha256.encrypt(sid, rounds=200, salt_size=16)
+oo. hashbuyyersignstatus = pbkdf2_sha256.encrypt(buyyersignstatus, rounds=200, salt_size=16)
+pp. hashSELLERstatus = pbkdf2_sha256.encrypt(SELLERstatus, rounds=200, salt_size=16)
+qq. ENCconn = pymysql.connect("localhost", "root", "", "freelancerdb")
+rr. ENCquery = """INSERT INTO `encryptselleragreementtb` (jobid, jobsubject, job-budget, jobtimelimit, jobdescription, buyyerID, buyyerName, buyyerPhone, buyyerE-mail,    sellerID,    buyyerSignStatus,    sellerSignStatus)    VALUES (
+%(value2)s,  %(value3)s,  %(value4)s,  %(value5)s,  %(value6)s,  %(value7)s,
+%(value8)s, %(value9)s, %(value10)s, %(value11)s, %(value12)s, %(value13)s
+)"""
+ss. ENCcur = ENCconn.cursor()
+tt. ENCparams = {'value2': hashjobid, 'value3': hashsub, 'value4': hashbgt, 'value5': hashtl,
+i.	'value6': hashdes, 'value7': hashBID, 'value8': hashbn, 'value9': hashbp, 'value10': hashbe,
+ii.	'value11':	hashsid,	'value12':	hashbuyyersignstatus,	'value13': hashSELLERstatus}
+uu. ENCcur.execute(ENCquery, ENCparams)
+vv. ENCconn.commit() ww.	ENCcur.close()
+xx. ENCconn.close()
+yy. updateconn = pymysql.connect("localhost", "root", "", "freelancerdb") zz. updatecur = updateconn.cursor()
+aaa.	sqlquery = """ UPDATE postjobstb SET agreementstatus = 'Final' WHERE jobid = %(value)s """
+bbb.	updateParams = {'value': jobid}
+ccc.	updatecur.execute(sqlquery, updateParams) ddd.	updateconn.commit()
+eee.	updatecur.close() fff. updateconn.close()
+ggg.	contexts = {'msg': message}
+hhh.	return render(request, "agreementform.html", {'id': contexts})
+46.	else:
+a.	return render(request, "sellerrRequest.html")
+47.	except:
+48.	return render(request, "sellerrRequest.html")
+49.	def showsellerpendingagreement(request):
+50.	try:
+51.	buyyerid = request.session["lid"]
+52.	details = SellerAgreementModel.objects.all()
+53.	detailss = details.filter(sellerID=buyyerid)
+54.	detail = detailss.filter(sellerSignStatus='')
+55.	return render(request, 'SignedAgreement.html', {'detail': detail})
+56.	except:
+57.	return render(request, "Login.html")
+58.	def agreementformSeller(request, agreementid):
+59.	try:
+60.	sellerid = request.session["lid"]
+61.	import by MySQL
+62.	sellerconn = pymysql.connect("localhost", "root", "", "freelancerdb")
+63.	sellercur = sellerconn.cursor()
+64.	sellerqry = """SELECT * FROM `logintb` where loginId = %(value)s """
+65.	params = {'value': sellerid}
+66.	sellercur.execute(sellerqry, params)
+67.	sellerresult = sellercur.fetchone()
+68.	sellercur.close()
+69.	sellerconn.close()
+70.	agreementconn = pymysql.connect("localhost", "root", "", "freelancerdb")
+71.	agreementcur = agreementconn.cursor()
+72.	qry = """SELECT * FROM `selleragreementtb` where agreementid = %(value)s """
+73.	params = {'value': agreementid}
+74.	agreementcur.execute(qry, params)
+75.	agreementresult = agreementcur.fetchone()
+76.	agreementcur.close()
+77.	agreementconn.close()
+78.	contexts = {
+a.	'agreementdate': datetime.datetime.now(),
+b.	'agreementid': agreementid,
+c.	'jobid': agreementresult[1],
+d.	'jobsubject': agreementresult[2],
+e.	'jobbudget': agreementresult[3],
+f.	'timelimit': agreementresult[4],
+g.	'description': agreementresult[5],
+h.	'buyerid': agreementresult[6],
+i.	'buyername': agreementresult[7],
+j.	'buyerphone': agreementresult[8],
+k.	'buyeremail': agreementresult[9],
+l.	'sellerid': sellerid,
+m.	'sellername': sellerresult[4],
+n.	'sellerphone': sellerresult[5],
+o.	'selleremail': sellerresult[6]
+79. }
+80.	return render(request, "Sagreementform.html", {'id': contexts})
+81.	except:
+82.	return render(request, 'sellerrRequest.html')
+83.	def buyyeragreementdata(request):
+84.	try:
+85.	if request.method == "POST":
+a.	agreementID = request.POST['agreementID']
+b.	jobid = request.POST['id']
+c.	sub = request.POST['sub']
+d.	bgt = request.POST['bgt']
+e.	tl = request.POST['tl']
+f.	des = request.POST['des']
+g.	sid = request.POST['sid']
+h.	snm = request.POST['snm']
+i.	sp = request.POST['sp']
+j.	sem = request.POST['sem']
+k.	BID = request.POST['BID']
+l.	buyyersignstatus = 'Signed'
+m.	sellersignstatus = 'Signed'
+n.	import pymysql
+o.	message = "Agreement has been signed by " + " " + snm
+p.	conn = pymysql.connect("localhost", "root", "", "freelancerdb")
+q.	query = """INSERT INTO `buyyeragreementtb` (agreementid, jobid, jobsubject, jobbudget, jobtimelimit, jobdescription, sellerID, sellerName, sellerPhone, sellerEmail, buyyerID, buyyerSignStatus, sellerSignStatus) VALUES (%(value1)s, %(value2)s, %(value3)s, %(value4)s, %(value5)s, %(value6)s, %(value7)s, %(value8)s, %(value9)s, %(value10)s, %(value11)s, %(value12)s, %(value13)s)"""
+r.	cur = conn.cursor()
+s.	params = {'value1': agreementID, 'value2': jobid, 'value3': sub, 'value4': bgt, 'value5': tl,
+i.	'value6': des, 'value7': sid, 'value8': snm, 'value9': sp, 'value10': sem, 'value11': BID,
+ii.	'value12': buyyersignstatus, 'value13': sellersignstatus}
+t.	cur.execute(query, params)
+u.	conn.commit()
+v.	cur.close()
+w.	conn.close()
+x.	hashagreementID = pbkdf2_sha256.encrypt(agreementID, rounds=200, salt_size=16)
+y.	hashjobid = pbkdf2_sha256.encrypt(jobid, rounds=200, salt_size=16)
+z.	hashsub = pbkdf2_sha256.encrypt(sub, rounds=200, salt_size=16) aa. hashbgt = pbkdf2_sha256.encrypt(bgt, rounds=200, salt_size=16) bb. hashtl = pbkdf2_sha256.encrypt(tl, rounds=200, salt_size=16)
+cc. hashdes = pbkdf2_sha256.encrypt(des, rounds=200, salt_size=16) dd. hashsid = pbkdf2_sha256.encrypt(sid, rounds=200, salt_size=16) ee. hashsnm = pbkdf2_sha256.encrypt(snm, rounds=200, salt_size=16) ff. hashsp = pbkdf2_sha256.encrypt(sp, rounds=200, salt_size=16)
+gg. hashsem = pbkdf2_sha256.encrypt(sem, rounds=200, salt_size=16) hh. hashBID = pbkdf2_sha256.encrypt(BID, rounds=200, salt_size=16)
+ii.	hashbuyyersignstatus = pbkdf2_sha256.encrypt(buyyersignstatus, rounds=200, salt_size=16)
+jj. hashsellersignstatus = pbkdf2_sha256.encrypt(sellersignstatus, rounds=200, salt_size=16)
+kk. encconn = pymysql.connect("localhost", "root", "", "freelancerdb")
+ll. encquery = """INSERT INTO `encryptbuyyeragreementtb` (agreementid,  jobid, jobsubject, jobbudget, jobtimelimit, jobdescription, sellerID, sellerName, sellerPhone, sellerEmail, buyyerID, buyyerSignStatus, sellerSignStatus) VALUES   (%(value1)s,   %(value2)s,   %(value3)s,   %(value4)s, %(value5)s,
+%(value6)s, %(value7)s, %(value8)s, %(value9)s, %(value10)s, %(value11)s,
+%(value12)s, %(value13)s)"""
+mm.	enccur = encconn.cursor()
+nn. encparams = {'value1': hashagreementID, 'value2': hashjobid, 'value3': hashsub, 'value4': hashbgt,
+i.	'value5': hashtl,
+ii.	'value6': hashdes, 'value7': hashsid, 'value8': hashsnm, 'value9': hashsp, 'value10': hashsem,
+iii.	'value11': hashBID,
+iv.	'value12': hashbuyyersignstatus, 'value13': hashsellersignstatus} oo. enccur.execute(encquery, encparams)
+pp. encconn.commit()
+qq. enccur.close() rr. encconn.close()
+ss. updateconn = pymysql.connect("localhost", "root", "", "freelancerdb") tt. updatecur = updateconn.cursor()
+uu. sqlquery = """ UPDATE selleragreementtb SET sellerSignStatus = 'Signed' WHERE agreementid = %(value)s """
+vv. updateParams = {'value': agreementID}
+ww.	updatecur.execute(sqlquery, updateParams)
+xx. updateconn.commit() yy. updatecur.close()
+zz. updateconn.close()
+aaa.	updateconn1 = pymysql.connect("localhost", "root", "", "freelancerdb") bbb.	updatecur1 = updateconn1.cursor()
+ccc.	sqlquery1 = """ UPDATE bidtb SET bidStatus = 'Approved' WHERE sellerID = %(value)s and jobID = %(value1)s """
+ddd.	updateParams1 = {'value': sid, 'value1': jobid} eee.	updatecur1.execute(sqlquery1, updateParams1) fff. updateconn1.commit()
+ggg.	updatecur1.close()
+hhh.	updateconn1.close()
+iii. contexts = {'msg': message}
+jjj. return render(request, "Sagreementform.html", {'id': contexts})
+86.	else:
+a.	return render(request, "SellerDashboard.html")
+87.	except:
+88.	return render(request, "SellerDashboard.html")
+89.	def seller disagreement(request, jobid, agreementid):
+90.	try:
+91.	sellerid = request.session["lid"]
+92.	import pymysql
+93.	updateconn = pymysql.connect("localhost", "root", "", "freelancerdb")
+94.	updatecur = updateconn.cursor()
+95.	sqlquery = """ UPDATE postjobstb SET agreementstatus = 'Pending' WHERE jobid =
+%(value)s """
+96.	updateParams = {'value': jobid}
+97.	updatecur.execute(sqlquery, updateParams)
+98.	updateconn.commit()
+99.	updatecur.close()
+100.	updateconn.close()
+101.	updateconn1 = pymysql.connect("localhost", "root", "", "freelancerdb")
+102.	updatecur1 = updateconn1.cursor()
+103.	sqlquery1 = """ DELETE FROM selleragreementtb WHERE agreementid =
+%(value)s """
+104.	updateParams1 = {'value': agreementid}
+105.	updatecur1.execute(sqlquery1, updateParams1)
+106.	updateconn1.commit()
+107.	updatecur1.close()
+108.	updateconn1.close()
+109.	message = "Agreement has been cancelled"
+110.	contexts = {
+a.	'msg': message
+111.	}
+112.	return render(request, "SignedAgreement.html", {'id': contexts})
+113.	except:
+114.	return render(request, 'Login.html')
